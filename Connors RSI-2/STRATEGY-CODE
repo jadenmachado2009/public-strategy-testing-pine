@@ -1,0 +1,43 @@
+// This Pine Script® code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © jadenmachado1234
+
+//@version=6
+strategy("Connors RSI-2",
+     overlay           = true,
+     initial_capital   = 1000000,
+     default_qty_type  = strategy.fixed,
+     default_qty_value = 2,
+     commission_type   = strategy.commission.cash_per_contract,
+     commission_value  = 2.5,
+     slippage          = 2
+    )
+
+// INPUTS
+inpRsiLen  = input.int(2, 'RSI Length', step = 1)
+inpSma     = input.int(200, 'SMA', step = 1)
+inpRsiOB   = input.int(95, 'RSI OverBought', step = 1)
+inpRsiOS   = input.int(5, 'RSI OverSold', step = 1)
+inpExitSma = input.int(5, 'EXIT SMA', step = 1)
+
+// INDICATORS
+rsi     = ta.rsi(close, inpRsiLen)
+sma     = ta.sma(close, inpSma)
+exitSma = ta.sma(close, inpExitSma)
+
+// CONDITIONS
+longCondition  = close > sma and rsi < inpRsiOS 
+shortCondition = close < sma and rsi > inpRsiOB
+
+// ENTRY
+if longCondition
+    strategy.entry('LONG', strategy.long)
+
+if shortCondition
+    strategy.entry('SHORT', strategy.short)
+
+// EXIT
+if strategy.position_size > 0 and close > exitSma
+    strategy.close("LONG")
+
+if strategy.position_size < 0 and close < exitSma
+    strategy.close("SHORT")
