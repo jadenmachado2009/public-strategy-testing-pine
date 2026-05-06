@@ -1,1 +1,1 @@
-#TradingView pine script strategy tester
+# TradingView pine script strategy tester
